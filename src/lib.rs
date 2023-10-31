@@ -23,14 +23,8 @@ fn attributes_map(attributes: Attributes) -> HashMap<String, String> {
 }
 
 #[pyfunction]
-fn parse_junit_xml(path_string: String) -> PyResult<Vec<HashMap<&'static str, String>>> {
-    let mut reader = match Reader::from_file(Path::new(&path_string)) {
-        Ok(reader) => Ok(reader),
-        Err(_) => Err(PyException::new_err(format!(
-            "Error creating reader from file {}",
-            &path_string
-        ))),
-    }?;
+fn parse_junit_xml(xml_string: String) -> PyResult<Vec<HashMap<&'static str, String>>> {
+    let mut reader = Reader::from_str(&xml_string);
     reader.trim_text(true);
 
     let mut list_of_test_runs = Vec::new();
