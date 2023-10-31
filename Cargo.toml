@@ -1,0 +1,13 @@
+[package]
+name = "testing-result-parsers"
+version = "0.3.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "testing_result_parsers"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = "0.19.0"
+quick-xml = "0.31.0"
