@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="4" failures="0" errors="0" time="0.603">
+  <testsuite name="Title" errors="0" failures="0" skipped="0" timestamp="2023-11-10T17:59:47" time="0.3" tests="4">
+    <testcase classname="Title when rendered renders pull title" name="Title when rendered renders pull title" time="0.036">
+    </testcase>
+    <testcase classname="Title when rendered renders pull author" name="Title when rendered renders pull author" time="0.005">
+    </testcase>
+    <testcase classname="Title when rendered renders pull updatestamp" name="Title when rendered renders pull updatestamp" time="0.002">
+    </testcase>
+    <testcase classname="Title when rendered for first pull request renders pull title" name="Title when rendered for first pull request renders pull title" time="0.006">
+    </testcase>
+  </testsuite>
+</testsuites>
