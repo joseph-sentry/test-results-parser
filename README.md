@@ -4,6 +4,8 @@ This project requires `maturin`, it can be installed using pip:
 For development, to install the library in your local venv (I haven't gotten this to work without using a venv), run:
 ```maturin develop```
 
+this will rebuild the rust portion of the library
+
 To use the library just import it after installing:
 ```import testing_result_parsers```
 
