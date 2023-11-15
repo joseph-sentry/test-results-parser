@@ -52,6 +52,23 @@ class TestParsers:
                     ),
                 ],
             ),
+            (
+                "./tests/vitest-junit.xml",
+                [
+                    Testrun(
+                        "__tests__/test-file-1.test.ts::first test file &gt; 2 + 2 should equal 4",
+                        0.01,
+                        Outcome.Failure,
+                        "__tests__/test-file-1.test.ts",
+                    ),
+                    Testrun(
+                        "__tests__/test-file-1.test.ts::first test file &gt; 4 - 2 should equal 2",
+                        0,
+                        Outcome.Pass,
+                        "__tests__/test-file-1.test.ts",
+                    ),
+                ],
+            ),
         ],
     )
     def test_junit(self, filename, expected):
