@@ -1,0 +1,101 @@
+{
+    "numTotalTestSuites": 1,
+    "numPassedTestSuites": 0,
+    "numFailedTestSuites": 1,
+    "numPendingTestSuites": 0,
+    "numTotalTests": 1,
+    "numPassedTests": 0,
+    "numFailedTests": 1,
+    "numPendingTests": 0,
+    "numTodoTests": 0,
+    "startTime": 1697737019307,
+    "success": false,
+    "testResults": [
+        {
+            "assertionResults": [
+                {
+                    "ancestorTitles": [
+                        "",
+                        "first test file"
+                    ],
+                    "fullName": " first test file 2 + 2 should equal 4",
+                    "status": "failed",
+                    "title": "2 + 2 should equal 4",
+                    "duration": 9,
+                    "failureMessages": [
+                        "expected 5 to be 4 // Object.is equality"
+                    ],
+                    "location": {
+                        "line": 20,
+                        "column": 28
+                    }
+                },
+                {
+                    "ancestorTitles": [
+                        "",
+                        "first test file"
+                    ],
+                    "fullName": " first test file 2 + 2 should equal 4",
+                    "status": "failed",
+                    "title": "2 + 2 should equal 4",
+                    "duration": 9,
+                    "failureMessages": [
+                        "expected 5 to be 4 // Object.is equality"
+                    ],
+                    "location": {
+                        "line": 20,
+                        "column": 28
+                    }
+                }
+            ],
+            "startTime": 1697737019787,
+            "endTime": 1697737019797,
+            "status": "failed",
+            "message": "",
+            "name": "/root-directory/__tests__/test-file-1.test.ts"
+        },
+        {
+            "assertionResults": [
+                {
+                    "ancestorTitles": [
+                        "",
+                        "first test file"
+                    ],
+                    "fullName": " first test file 2 + 2 should equal 4",
+                    "status": "failed",
+                    "title": "2 + 2 should equal 4",
+                    "duration": 9,
+                    "failureMessages": [
+                        "expected 5 to be 4 // Object.is equality"
+                    ],
+                    "location": {
+                        "line": 20,
+                        "column": 28
+                    }
+                },
+                {
+                    "ancestorTitles": [
+                        "",
+                        "first test file"
+                    ],
+                    "fullName": " first test file 2 + 2 should equal 4",
+                    "status": "failed",
+                    "title": "2 + 2 should equal 4",
+                    "duration": 9,
+                    "failureMessages": [
+                        "expected 5 to be 4 // Object.is equality"
+                    ],
+                    "location": {
+                        "line": 20,
+                        "column": 28
+                    }
+                }
+            ],
+            "startTime": 1697737019787,
+            "endTime": 1697737019797,
+            "status": "failed",
+            "message": "",
+            "name": "/root-directory/__tests__/test-file-1.test.ts"
+        }
+    ]
+}
