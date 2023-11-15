@@ -1,14 +1,36 @@
+use std::fmt::Display;
+
 use pyo3::class::basic::CompareOp;
 use pyo3::{prelude::*, pyclass};
 
 use crate::helpers::s;
 
+#[derive(Clone, Copy, Debug, PartialEq)]
+#[pyclass]
+pub enum Outcome {
+    Pass,
+    Error,
+    Failure,
+    Skip,
+}
+
+impl Display for Outcome {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self {
+            Outcome::Pass => write!(f, "Pass"),
+            Outcome::Failure => write!(f, "Failure"),
+            Outcome::Error => write!(f, "Error"),
+            Outcome::Skip => write!(f, "Skip"),
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 #[pyclass]
 pub struct Testrun {
     pub name: String,
-    pub duration: String,
-    pub outcome: String,
+    pub duration: f64,
+    pub outcome: Outcome,
     pub testsuite: String,
 }
 
@@ -16,8 +38,8 @@ impl Testrun {
     pub fn empty() -> Testrun {
         Testrun {
             name: s(""),
-            duration: s(""),
-            outcome: s(""),
+            duration: 0.0,
+            outcome: Outcome::Pass,
             testsuite: s(""),
         }
     }
@@ -26,7 +48,7 @@ impl Testrun {
 #[pymethods]
 impl Testrun {
     #[new]
-    fn new(name: String, duration: String, outcome: String, testsuite: String) -> Self {
+    fn new(name: String, duration: f64, outcome: Outcome, testsuite: String) -> Self {
         Self {
             name,
             duration,

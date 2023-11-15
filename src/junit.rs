@@ -7,8 +7,7 @@ use quick_xml::events::attributes::Attributes;
 use quick_xml::events::Event;
 use quick_xml::reader::Reader;
 
-use crate::helpers::s;
-use crate::testrun::Testrun;
+use crate::testrun::{Outcome, Testrun};
 
 // from https://gist.github.com/scott-codecov/311c174ecc7de87f7d7c50371c6ef927#file-cobertura-rs-L18-L31
 fn attributes_map(attributes: Attributes) -> HashMap<String, String> {
@@ -26,20 +25,21 @@ fn attributes_map(attributes: Attributes) -> HashMap<String, String> {
         .collect::<HashMap<_, _>>();
 }
 
-fn populate(testrun: &mut Testrun, attr_hm: &HashMap<String, String>, curr_testsuite: String) {
+fn populate(attr_hm: &HashMap<String, String>, testsuite: String) -> Testrun {
     let name = format!(
         "{}::{}",
         attr_hm.get("classname").unwrap(),
         attr_hm.get("name").unwrap()
     );
-    testrun.name = name;
 
-    let duration = attr_hm.get("time").unwrap().to_string();
-    testrun.duration = duration;
+    let duration = attr_hm.get("time").unwrap().to_string().parse().unwrap();
 
-    testrun.outcome = s("pass");
-
-    testrun.testsuite = curr_testsuite
+    Testrun {
+        name,
+        duration,
+        outcome: Outcome::Pass,
+        testsuite: testsuite,
+    }
 }
 
 #[pyfunction]
@@ -51,7 +51,7 @@ pub fn parse_junit_xml(filename: String) -> PyResult<Vec<Testrun>> {
 
     let mut buf = Vec::new();
 
-    let mut saved_testrun = Testrun::empty();
+    let mut saved_testrun: Option<Testrun> = None;
 
     let mut curr_testsuite = String::new();
 
@@ -70,17 +70,22 @@ pub fn parse_junit_xml(filename: String) -> PyResult<Vec<Testrun>> {
             Ok(Event::Start(e)) => match e.name().as_ref() {
                 b"testcase" => {
                     let attr_hm = attributes_map(e.attributes());
-
-                    populate(&mut saved_testrun, &attr_hm, curr_testsuite.clone());
+                    saved_testrun = Some(populate(&attr_hm, curr_testsuite.clone()));
                 }
                 b"skipped" => {
-                    saved_testrun.outcome = s("skipped");
+                    let mut testrun = saved_testrun.unwrap();
+                    testrun.outcome = Outcome::Skip;
+                    saved_testrun = Some(testrun);
                 }
                 b"error" => {
-                    saved_testrun.outcome = s("error");
+                    let mut testrun = saved_testrun.unwrap();
+                    testrun.outcome = Outcome::Error;
+                    saved_testrun = Some(testrun);
                 }
                 b"failure" => {
-                    saved_testrun.outcome = s("failure");
+                    let mut testrun = saved_testrun.unwrap();
+                    testrun.outcome = Outcome::Failure;
+                    saved_testrun = Some(testrun);
                 }
                 b"testsuite" => {
                     let attr_hm = attributes_map(e.attributes());
@@ -91,17 +96,15 @@ pub fn parse_junit_xml(filename: String) -> PyResult<Vec<Testrun>> {
             },
             Ok(Event::End(e)) => match e.name().as_ref() {
                 b"testcase" => {
-                    list_of_test_runs.push(saved_testrun.clone());
+                    list_of_test_runs.push(saved_testrun.unwrap());
+                    saved_testrun = None;
                 }
                 _ => (),
             },
             Ok(Event::Empty(e)) => match e.name().as_ref() {
                 b"testcase" => {
                     let attr_hm = attributes_map(e.attributes());
-
-                    populate(&mut saved_testrun, &attr_hm, curr_testsuite.clone());
-
-                    list_of_test_runs.push(saved_testrun.clone());
+                    list_of_test_runs.push(populate(&attr_hm, curr_testsuite.clone()));
                 }
                 _ => (),
             },

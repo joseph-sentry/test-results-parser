@@ -1,5 +1,5 @@
 import pytest
-from testing_result_parsers import parse_junit_xml, Testrun
+from testing_result_parsers import parse_junit_xml, Testrun, Outcome
 
 
 class TestParsers:
@@ -10,16 +10,16 @@ class TestParsers:
                 "./tests/junit.xml",
                 [
                     Testrun(
-                        name="tests.test_parsers.TestParsers::test_junit[junit.xml--True]",
-                        duration="0.001",
-                        outcome="failure",
-                        testsuite="pytest",
+                        "tests.test_parsers.TestParsers::test_junit[junit.xml--True]",
+                        0.001,
+                        Outcome.Failure,
+                        "pytest",
                     ),
                     Testrun(
-                        name="tests.test_parsers.TestParsers::test_junit[jest-junit.xml--False]",
-                        duration="0.064",
-                        outcome="pass",
-                        testsuite="pytest",
+                        "tests.test_parsers.TestParsers::test_junit[jest-junit.xml--False]",
+                        0.064,
+                        Outcome.Pass,
+                        "pytest",
                     ),
                 ],
             ),
@@ -27,28 +27,28 @@ class TestParsers:
                 "./tests/jest-junit.xml",
                 [
                     Testrun(
-                        name="Title when rendered renders pull title::Title when rendered renders pull title",
-                        duration="0.036",
-                        outcome="pass",
-                        testsuite="Title",
+                        "Title when rendered renders pull title::Title when rendered renders pull title",
+                        0.036,
+                        Outcome.Pass,
+                        "Title",
                     ),
                     Testrun(
-                        name="Title when rendered renders pull author::Title when rendered renders pull author",
-                        duration="0.005",
-                        outcome="pass",
-                        testsuite="Title",
+                        "Title when rendered renders pull author::Title when rendered renders pull author",
+                        0.005,
+                        Outcome.Pass,
+                        "Title",
                     ),
                     Testrun(
-                        name="Title when rendered renders pull updatestamp::Title when rendered renders pull updatestamp",
-                        duration="0.002",
-                        outcome="pass",
-                        testsuite="Title",
+                        "Title when rendered renders pull updatestamp::Title when rendered renders pull updatestamp",
+                        0.002,
+                        Outcome.Pass,
+                        "Title",
                     ),
                     Testrun(
-                        name="Title when rendered for first pull request renders pull title::Title when rendered for first pull request renders pull title",
-                        duration="0.006",
-                        outcome="pass",
-                        testsuite="Title",
+                        "Title when rendered for first pull request renders pull title::Title when rendered for first pull request renders pull title",
+                        0.006,
+                        Outcome.Pass,
+                        "Title",
                     ),
                 ],
             ),

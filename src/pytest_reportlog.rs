@@ -5,7 +5,7 @@ use std::{
 
 use pyo3::{exceptions::PyRuntimeError, prelude::*};
 
-use crate::testrun::Testrun;
+use crate::testrun::{Outcome, Testrun};
 
 use serde::{Deserialize, Serialize};
 
@@ -34,7 +34,7 @@ pub fn parse_pytest_reportlog(filename: String) -> PyResult<Vec<Testrun>> {
     let mut reader = BufReader::new(f);
 
     let mut val: PytestLine;
-    let mut saved_start_time: f64 = 0.0;
+    let mut saved_start_time: Option<f64> = Some(0.0);
 
     let mut lineno = 0;
 
@@ -50,17 +50,25 @@ pub fn parse_pytest_reportlog(filename: String) -> PyResult<Vec<Testrun>> {
                 if val.report_type == "TestReport" {
                     match val.when.as_str() {
                         "setup" => {
-                            saved_start_time = val.start;
+                            saved_start_time = Some(val.start);
                         }
                         "teardown" => {
                             let location = val.location.unwrap();
                             let name = location.2;
                             let testsuite = location.0;
-                            let outcome = val.outcome;
+                            let outcome = match val.outcome.as_str() {
+                                "passed" => Ok(Outcome::Pass),
+                                "failed" => Ok(Outcome::Failure),
+                                "skipped" => Ok(Outcome::Skip),
+                                x => Err(PyRuntimeError::new_err(format!(
+                                    "Error reading outcome on line number {} from {}. {} is an invalid value",
+                                    lineno, &filename, x
+                                ))),
+                            }?;
                             let end_time = val.stop;
+                            let start_time = saved_start_time.unwrap();
 
-                            let f_duration = end_time - saved_start_time;
-                            let duration = f_duration.to_string();
+                            let duration = end_time - start_time;
 
                             testruns.push(Testrun {
                                 name,
@@ -68,6 +76,7 @@ pub fn parse_pytest_reportlog(filename: String) -> PyResult<Vec<Testrun>> {
                                 duration,
                                 outcome,
                             });
+                            saved_start_time = None
                         }
                         _ => (),
                     }
