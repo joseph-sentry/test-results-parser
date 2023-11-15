@@ -1,12 +1,7 @@
 use pyo3::class::basic::CompareOp;
 use pyo3::{prelude::*, pyclass};
 
-use std::collections::hash_map::DefaultHasher;
-
 use crate::helpers::s;
-
-// Required to call the `.hash` and `.finish` methods, which are defined on traits.
-use std::hash::{Hash, Hasher};
 
 #[derive(Clone, Debug)]
 #[pyclass]
@@ -45,16 +40,6 @@ impl Testrun {
             "({}, {}, {}, {})",
             self.name, self.outcome, self.duration, self.testsuite
         )
-    }
-
-    fn __hash__(&self) -> u64 {
-        let mut hasher = DefaultHasher::new();
-
-        self.name.hash(&mut hasher);
-        self.duration.hash(&mut hasher);
-        self.outcome.hash(&mut hasher);
-        self.testsuite.hash(&mut hasher);
-        hasher.finish()
     }
 
     fn __richcmp__(&self, other: &Self, op: CompareOp) -> PyResult<bool> {
