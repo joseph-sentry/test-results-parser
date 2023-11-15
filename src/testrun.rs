@@ -2,7 +2,6 @@ use pyo3::class::basic::CompareOp;
 use pyo3::{prelude::*, pyclass};
 
 use std::collections::hash_map::DefaultHasher;
-use std::collections::HashMap;
 
 use crate::helpers::s;
 
