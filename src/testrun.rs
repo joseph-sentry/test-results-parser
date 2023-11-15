@@ -27,22 +27,6 @@ impl Testrun {
             testsuite: s(""),
         };
     }
-
-    pub fn populate(&mut self, attr_hm: &HashMap<String, String>, curr_testsuite: String) {
-        let name = format!(
-            "{}::{}",
-            attr_hm.get("classname").unwrap().to_string(),
-            attr_hm.get("name").unwrap().to_string()
-        );
-        self.name = name;
-
-        let duration = attr_hm.get("time").unwrap().to_string();
-        self.duration = duration;
-
-        self.outcome = s("pass");
-
-        self.testsuite = curr_testsuite
-    }
 }
 
 #[pymethods]

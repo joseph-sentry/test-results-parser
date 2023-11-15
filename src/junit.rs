@@ -26,9 +26,25 @@ fn attributes_map(attributes: Attributes) -> HashMap<String, String> {
         .collect::<HashMap<_, _>>();
 }
 
+fn populate(testrun: &mut Testrun, attr_hm: &HashMap<String, String>, curr_testsuite: String) {
+    let name = format!(
+        "{}::{}",
+        attr_hm.get("classname").unwrap().to_string(),
+        attr_hm.get("name").unwrap().to_string()
+    );
+    testrun.name = name;
+
+    let duration = attr_hm.get("time").unwrap().to_string();
+    testrun.duration = duration;
+
+    testrun.outcome = s("pass");
+
+    testrun.testsuite = curr_testsuite
+}
+
 #[pyfunction]
-pub fn parse_junit_xml(xml_string: String) -> PyResult<Vec<Testrun>> {
-    let mut reader = Reader::from_file(&xml_string).unwrap();
+pub fn parse_junit_xml(filename: String) -> PyResult<Vec<Testrun>> {
+    let mut reader = Reader::from_file(&filename).unwrap();
     reader.trim_text(true);
 
     let mut list_of_test_runs = Vec::new();
@@ -55,7 +71,7 @@ pub fn parse_junit_xml(xml_string: String) -> PyResult<Vec<Testrun>> {
                 b"testcase" => {
                     let attr_hm = attributes_map(e.attributes());
 
-                    saved_testrun.populate(&attr_hm, curr_testsuite.clone());
+                    populate(&mut saved_testrun, &attr_hm, curr_testsuite.clone());
                 }
                 b"skipped" => {
                     saved_testrun.outcome = s("skipped");
@@ -83,7 +99,7 @@ pub fn parse_junit_xml(xml_string: String) -> PyResult<Vec<Testrun>> {
                 b"testcase" => {
                     let attr_hm = attributes_map(e.attributes());
 
-                    saved_testrun.populate(&attr_hm, curr_testsuite.clone());
+                    populate(&mut saved_testrun, &attr_hm, curr_testsuite.clone());
 
                     list_of_test_runs.push(saved_testrun.clone());
                 }
