@@ -18,9 +18,9 @@ fn attributes_map(attributes: Attributes) -> HashMap<String, String> {
                 let bytes = attr.value.into_owned();
                 let value = String::from_utf8(bytes).unwrap();
                 let key = String::from_utf8(attr.key.local_name().as_ref().to_vec()).unwrap();
-                return Some((key, value));
+                Some((key, value))
             } else {
-                return None;
+                None
             }
         })
         .collect::<HashMap<_, _>>();
@@ -29,8 +29,8 @@ fn attributes_map(attributes: Attributes) -> HashMap<String, String> {
 fn populate(testrun: &mut Testrun, attr_hm: &HashMap<String, String>, curr_testsuite: String) {
     let name = format!(
         "{}::{}",
-        attr_hm.get("classname").unwrap().to_string(),
-        attr_hm.get("name").unwrap().to_string()
+        attr_hm.get("classname").unwrap(),
+        attr_hm.get("name").unwrap()
     );
     testrun.name = name;
 

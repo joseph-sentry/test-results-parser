@@ -19,12 +19,12 @@ pub struct Testrun {
 
 impl Testrun {
     pub fn empty() -> Testrun {
-        return Testrun {
+        Testrun {
             name: s(""),
             duration: s(""),
             outcome: s(""),
             testsuite: s(""),
-        };
+        }
     }
 }
 
@@ -41,10 +41,10 @@ impl Testrun {
     }
 
     fn __repr__(&self) -> String {
-        return format!(
+        format!(
             "({}, {}, {}, {})",
             self.name, self.outcome, self.duration, self.testsuite
-        );
+        )
     }
 
     fn __hash__(&self) -> u64 {
