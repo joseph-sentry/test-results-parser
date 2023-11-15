@@ -28,9 +28,7 @@ struct PytestLine {
 pub fn parse_pytest_reportlog(filename: String) -> PyResult<Vec<Testrun>> {
     let mut buf = String::new();
     let f = File::open(&filename)?;
-
     let mut testruns: Vec<Testrun> = Vec::new();
-
     let mut reader = BufReader::new(f);
 
     let mut val: PytestLine;
