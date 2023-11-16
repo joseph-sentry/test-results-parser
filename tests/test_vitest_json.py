@@ -30,8 +30,9 @@ def test_vitest_json():
         ),
     ]
 
-    testruns = parse_vitest_json("tests/vitest.json")
+    with open("tests/vitest.json", "b+r") as f:
+        testruns = parse_vitest_json(f.read())
 
-    assert len(testruns) == len(expected)
-    for restest, extest in zip(testruns, expected):
-        assert restest == extest
+        assert len(testruns) == len(expected)
+        for restest, extest in zip(testruns, expected):
+            assert restest == extest

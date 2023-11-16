@@ -72,7 +72,8 @@ class TestParsers:
         ],
     )
     def test_junit(self, filename, expected):
-        res = parse_junit_xml(filename)
-        assert len(res) == len(expected)
-        for restest, extest in zip(res, expected):
-            assert restest == extest
+        with open(filename, "b+r") as f:
+            res = parse_junit_xml(f.read())
+            assert len(res) == len(expected)
+            for restest, extest in zip(res, expected):
+                assert restest == extest

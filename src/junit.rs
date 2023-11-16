@@ -43,8 +43,9 @@ fn populate(attr_hm: &HashMap<String, String>, testsuite: String) -> Testrun {
 }
 
 #[pyfunction]
-pub fn parse_junit_xml(filename: String) -> PyResult<Vec<Testrun>> {
-    let mut reader = Reader::from_file(&filename).unwrap();
+pub fn parse_junit_xml(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
+    let file_string = String::from_utf8_lossy(&file_bytes).into_owned();
+    let mut reader = Reader::from_str(file_string.as_str());
     reader.trim_text(true);
 
     let mut list_of_test_runs = Vec::new();

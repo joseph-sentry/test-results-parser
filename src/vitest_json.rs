@@ -32,12 +32,12 @@ struct VitestReport {
 }
 
 #[pyfunction]
-pub fn parse_vitest_json(filename: String) -> PyResult<Vec<Testrun>> {
-    let f = File::open(&filename)?;
+pub fn parse_vitest_json(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
     let mut testruns: Vec<Testrun> = Vec::new();
-    let reader = BufReader::new(f);
 
-    let val: VitestReport = serde_json::from_reader(reader).unwrap();
+    let file_string = String::from_utf8_lossy(&file_bytes).into_owned();
+
+    let val: VitestReport = serde_json::from_str(file_string.as_str()).unwrap();
 
     testruns = val
         .test_results
