@@ -2,8 +2,6 @@ use pyo3::{exceptions::PyRuntimeError, prelude::*};
 
 use serde::{Deserialize, Serialize};
 
-use std::{fs::File, io::BufReader};
-
 use crate::testrun::{Outcome, Testrun};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -33,16 +31,14 @@ struct VitestReport {
 
 #[pyfunction]
 pub fn parse_vitest_json(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
-    let mut testruns: Vec<Testrun> = Vec::new();
-
     let file_string = String::from_utf8_lossy(&file_bytes).into_owned();
 
     let val: VitestReport = serde_json::from_str(file_string.as_str()).unwrap();
 
-    testruns = val
+    let testruns = val
         .test_results
         .into_iter()
-        .map(|result| {
+        .flat_map(|result| {
             result
                 .assertion_results
                 .into_iter()
@@ -60,7 +56,6 @@ pub fn parse_vitest_json(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
                 })
                 .collect::<Vec<_>>()
         })
-        .flatten()
         .collect();
 
     Ok(testruns)

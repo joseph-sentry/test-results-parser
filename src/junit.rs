@@ -38,7 +38,7 @@ fn populate(attr_hm: &HashMap<String, String>, testsuite: String) -> Testrun {
         name,
         duration,
         outcome: Outcome::Pass,
-        testsuite: testsuite,
+        testsuite,
     }
 }
 
