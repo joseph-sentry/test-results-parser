@@ -28,9 +28,13 @@ impl Display for Outcome {
 #[derive(Clone, Debug)]
 #[pyclass]
 pub struct Testrun {
+    #[pyo3(get, set)]
     pub name: String,
+    #[pyo3(get, set)]
     pub duration: f64,
+    #[pyo3(get, set)]
     pub outcome: Outcome,
+    #[pyo3(get, set)]
     pub testsuite: String,
 }
 
