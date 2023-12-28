@@ -6,14 +6,12 @@
 name: CI
 
 on:
-  push:
-    branches:
-      - main
-      - master
-    tags:
-      - '*'
-  pull_request:
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      release:
+        type: boolean
+        default: false
+        description: "Attach artifacts to a release"
 
 permissions:
   contents: read
@@ -83,16 +81,18 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    if: "startsWith(github.ref, 'refs/tags/')"
+    if: inputs.release == true
     needs: [linux, macos, sdist]
     steps:
       - uses: actions/download-artifact@v3
         with:
           name: wheels
-      - name: Publish to PyPI
-        uses: PyO3/maturin-action@v1
-        env:
-          MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: svenstaro/upload-release-action@v2
         with:
-          command: upload
-          args: --non-interactive --skip-existing *
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: wheels/dist/*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
