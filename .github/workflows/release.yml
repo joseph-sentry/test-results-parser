@@ -1,0 +1,13 @@
+name: build and release wheels
+
+on:
+  release:
+    types:
+      - created
+jobs:
+  buildwheels:
+    name: Build wheels
+    uses: ./.github/workflows/CI.yml
+    with:
+      release: true
+    secrets: inherit
