@@ -39,28 +39,29 @@ pub fn parse_vitest_json(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
     let val: VitestReport = serde_json::from_str(file_string.as_str())
         .map_err(|err| PyErr::new::<PyValueError, _>(err.to_string()))?;
 
-    let testruns = val
+    let testruns: Result<Vec<Testrun>, _> = val
         .test_results
         .into_iter()
         .flat_map(|result| {
             result
                 .assertion_results
                 .into_iter()
-                .map(move |aresult| Testrun {
-                    name: aresult.full_name,
-                    duration: aresult.duration_milliseconds as f64 / 1000.0,
-                    outcome: (match aresult.status.as_str() {
-                        "failed" => Ok(Outcome::Failure),
-                        "pending" => Ok(Outcome::Skip),
-                        "passed" => Ok(Outcome::Pass),
-                        _ => Err(PyRuntimeError::new_err("oh noooooooo")),
+                .map(move |aresult| {
+                    Ok(Testrun {
+                        name: aresult.full_name,
+                        duration: aresult.duration_milliseconds as f64 / 1000.0,
+                        outcome: (match aresult.status.as_str() {
+                            "failed" => Outcome::Failure,
+                            "pending" => Outcome::Skip,
+                            "passed" => Outcome::Pass,
+                            _ => return Err(PyRuntimeError::new_err("oh noooooooo")),
+                        }),
+                        testsuite: result.name.clone(),
                     })
-                    .unwrap(),
-                    testsuite: result.name.clone(),
                 })
                 .collect::<Vec<_>>()
         })
         .collect();
 
-    Ok(testruns)
+    Ok(testruns?)
 }
