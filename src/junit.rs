@@ -1,4 +1,5 @@
 use pyo3::exceptions::{PyException, PyRuntimeError};
+use pyo3::ffi::PyExc_EnvironmentError;
 use pyo3::prelude::*;
 
 use std::collections::HashMap;
@@ -80,17 +81,20 @@ pub fn parse_junit_xml(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
                     saved_testrun = Some(populate(&attr_hm?, curr_testsuite.clone())?);
                 }
                 b"skipped" => {
-                    let mut testrun = saved_testrun.unwrap();
+                    let mut testrun = saved_testrun
+                        .ok_or(PyException::new_err("Error accessing saved testrun"))?;
                     testrun.outcome = Outcome::Skip;
                     saved_testrun = Some(testrun);
                 }
                 b"error" => {
-                    let mut testrun = saved_testrun.unwrap();
+                    let mut testrun = saved_testrun
+                        .ok_or(PyException::new_err("Error accessing saved testrun"))?;
                     testrun.outcome = Outcome::Error;
                     saved_testrun = Some(testrun);
                 }
                 b"failure" => {
-                    let mut testrun = saved_testrun.unwrap();
+                    let mut testrun = saved_testrun
+                        .ok_or(PyException::new_err("Error accessing saved testrun"))?;
                     testrun.outcome = Outcome::Failure;
                     saved_testrun = Some(testrun);
                 }
@@ -106,7 +110,10 @@ pub fn parse_junit_xml(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
             },
             Ok(Event::End(e)) => match e.name().as_ref() {
                 b"testcase" => {
-                    list_of_test_runs.push(saved_testrun.unwrap());
+                    list_of_test_runs.push(
+                        saved_testrun
+                            .ok_or(PyException::new_err("Error accessing saved testrun"))?,
+                    );
                     saved_testrun = None;
                 }
                 _ => (),
