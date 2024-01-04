@@ -1,4 +1,7 @@
-use pyo3::{exceptions::PyRuntimeError, prelude::*};
+use pyo3::{
+    exceptions::{PyRuntimeError, PyValueError},
+    prelude::*,
+};
 
 use serde::{Deserialize, Serialize};
 
@@ -33,7 +36,8 @@ struct VitestReport {
 pub fn parse_vitest_json(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
     let file_string = String::from_utf8_lossy(&file_bytes).into_owned();
 
-    let val: VitestReport = serde_json::from_str(file_string.as_str()).unwrap();
+    let val: VitestReport = serde_json::from_str(file_string.as_str())
+        .map_err(|err| PyErr::new::<PyValueError, _>(err.to_string()))?;
 
     let testruns = val
         .test_results
