@@ -28,10 +28,10 @@ fn populate(attr_hm: &HashMap<String, String>, testsuite: String) -> Result<Test
         "{}::{}",
         attr_hm
             .get("classname")
-            .ok_or(PyRuntimeError::new_err("No duration found"))?,
+            .ok_or(PyRuntimeError::new_err("No classname found"))?,
         attr_hm
             .get("name")
-            .ok_or(PyRuntimeError::new_err("No duration found"))?
+            .ok_or(PyRuntimeError::new_err("No name found"))?
     );
 
     let duration = attr_hm
