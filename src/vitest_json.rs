@@ -54,7 +54,12 @@ pub fn parse_vitest_json(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
                             "failed" => Outcome::Failure,
                             "pending" => Outcome::Skip,
                             "passed" => Outcome::Pass,
-                            _ => return Err(PyRuntimeError::new_err("oh noooooooo")),
+                            x => {
+                                return Err(PyRuntimeError::new_err(format!(
+                                    "Error reading outcome. {} is an invalid value",
+                                    x
+                                )))
+                            }
                         }),
                         testsuite: result.name.clone(),
                     })
