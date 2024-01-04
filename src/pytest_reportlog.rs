@@ -31,31 +31,38 @@ pub fn parse_pytest_reportlog(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
 
     let string_lines = file_string.lines();
 
-    string_lines.for_each(|line| {
+    for line in string_lines {
         let val: PytestLine = serde_json::from_str(line)
-            .map_err(|err| PyRuntimeError::new_err(format!("Error parsing json line  {}", err)))
-            .unwrap();
+            .map_err(|err| PyRuntimeError::new_err(format!("Error parsing json line  {}", err)))?;
+
         if val.report_type == "TestReport" {
             match val.when.as_str() {
                 "setup" => {
                     saved_start_time = Some(val.start);
                 }
                 "teardown" => {
-                    let location = val.location.unwrap();
+                    let location = val.location.ok_or(PyRuntimeError::new_err(format!(
+                        "Error reading location on line number {}",
+                        lineno
+                    )))?;
                     let name = location.2;
                     let testsuite = location.0;
                     let outcome = match val.outcome.as_str() {
-                        "passed" => Ok(Outcome::Pass),
-                        "failed" => Ok(Outcome::Failure),
-                        "skipped" => Ok(Outcome::Skip),
-                        x => Err(PyRuntimeError::new_err(format!(
-                            "Error reading outcome on line number {}. {} is an invalid value",
-                            lineno, x
-                        ))),
-                    }
-                    .unwrap();
+                        "passed" => Outcome::Pass,
+                        "failed" => Outcome::Failure,
+                        "skipped" => Outcome::Skip,
+                        x => {
+                            return Err(PyRuntimeError::new_err(format!(
+                                "Error reading outcome on line number {}. {} is an invalid value",
+                                lineno, x
+                            )))
+                        }
+                    };
                     let end_time = val.stop;
-                    let start_time = saved_start_time.unwrap();
+                    let start_time = saved_start_time.ok_or(PyRuntimeError::new_err(format!(
+                        "Error reading saved start time on line number {}",
+                        lineno
+                    )))?;
 
                     let duration = end_time - start_time;
 
@@ -71,7 +78,7 @@ pub fn parse_pytest_reportlog(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
             }
         }
         lineno += 1;
-    });
+    }
 
     Ok(testruns)
 }
