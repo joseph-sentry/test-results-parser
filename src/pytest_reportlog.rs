@@ -1,6 +1,9 @@
-use pyo3::{exceptions::PyRuntimeError, prelude::*};
+use pyo3::prelude::*;
 
-use crate::testrun::{Outcome, Testrun};
+use crate::{
+    helpers::ParserError,
+    testrun::{Outcome, Testrun},
+};
 
 use serde::{Deserialize, Serialize};
 
@@ -33,7 +36,7 @@ pub fn parse_pytest_reportlog(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
 
     for line in string_lines {
         let val: PytestLine = serde_json::from_str(line)
-            .map_err(|err| PyRuntimeError::new_err(format!("Error parsing json line  {}", err)))?;
+            .map_err(|err| ParserError::new_err(format!("Error parsing json line  {}", err)))?;
 
         if val.report_type == "TestReport" {
             match val.when.as_str() {
@@ -41,7 +44,7 @@ pub fn parse_pytest_reportlog(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
                     saved_start_time = Some(val.start);
                 }
                 "teardown" => {
-                    let location = val.location.ok_or(PyRuntimeError::new_err(format!(
+                    let location = val.location.ok_or(ParserError::new_err(format!(
                         "Error reading location on line number {}",
                         lineno
                     )))?;
@@ -52,14 +55,14 @@ pub fn parse_pytest_reportlog(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
                         "failed" => Outcome::Failure,
                         "skipped" => Outcome::Skip,
                         x => {
-                            return Err(PyRuntimeError::new_err(format!(
+                            return Err(ParserError::new_err(format!(
                                 "Error reading outcome on line number {}. {} is an invalid value",
                                 lineno, x
                             )))
                         }
                     };
                     let end_time = val.stop;
-                    let start_time = saved_start_time.ok_or(PyRuntimeError::new_err(format!(
+                    let start_time = saved_start_time.ok_or(ParserError::new_err(format!(
                         "Error reading saved start time on line number {}",
                         lineno
                     )))?;
