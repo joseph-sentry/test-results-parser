@@ -1,11 +1,11 @@
 [package]
-name = "test-results-parser"
+name = "test_results_parser"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
-name = "testing_result_parsers"
+name = "test_results_parser"
 crate-type = ["cdylib"]
 
 [dependencies]
