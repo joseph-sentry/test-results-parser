@@ -1,5 +1,5 @@
 import pytest
-from testing_result_parsers import parse_vitest_json, Testrun, Outcome
+from test_results_parser import parse_vitest_json, Testrun, Outcome
 
 
 def test_vitest_json():

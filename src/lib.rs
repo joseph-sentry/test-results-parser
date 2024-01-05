@@ -8,7 +8,7 @@ mod vitest_json;
 
 /// A Python module implemented in Rust.
 #[pymodule]
-fn testing_result_parsers(_py: Python, m: &PyModule) -> PyResult<()> {
+fn test_results_parser(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add("ParserError", _py.get_type::<helpers::ParserError>())?;
     m.add_class::<testrun::Testrun>()?;
     m.add_class::<testrun::Outcome>()?;

@@ -1,5 +1,5 @@
 import pytest
-from testing_result_parsers import parse_pytest_reportlog, Testrun, Outcome
+from test_results_parser import parse_pytest_reportlog, Testrun, Outcome
 
 
 def test_reportlog():

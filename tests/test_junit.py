@@ -1,5 +1,5 @@
 import pytest
-from testing_result_parsers import parse_junit_xml, Testrun, Outcome
+from test_results_parser import parse_junit_xml, Testrun, Outcome
 
 
 class TestParsers:
