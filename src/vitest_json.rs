@@ -1,7 +1,8 @@
-use pyo3::{exceptions::PyRuntimeError, prelude::*};
+use pyo3::prelude::*;
 
 use serde::{Deserialize, Serialize};
 
+use crate::helpers::ParserError;
 use crate::testrun::{Outcome, Testrun};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -33,30 +34,38 @@ struct VitestReport {
 pub fn parse_vitest_json(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
     let file_string = String::from_utf8_lossy(&file_bytes).into_owned();
 
-    let val: VitestReport = serde_json::from_str(file_string.as_str()).unwrap();
+    let val: VitestReport = serde_json::from_str(file_string.as_str()).map_err(|err| {
+        ParserError::new_err(format!("Error parsing vitest JSON: {}", err.to_string()))
+    })?;
 
-    let testruns = val
+    let testruns: Result<Vec<Testrun>, _> = val
         .test_results
         .into_iter()
         .flat_map(|result| {
             result
                 .assertion_results
                 .into_iter()
-                .map(move |aresult| Testrun {
-                    name: aresult.full_name,
-                    duration: aresult.duration_milliseconds as f64 / 1000.0,
-                    outcome: (match aresult.status.as_str() {
-                        "failed" => Ok(Outcome::Failure),
-                        "pending" => Ok(Outcome::Skip),
-                        "passed" => Ok(Outcome::Pass),
-                        _ => Err(PyRuntimeError::new_err("oh noooooooo")),
+                .map(move |aresult| {
+                    Ok(Testrun {
+                        name: aresult.full_name,
+                        duration: aresult.duration_milliseconds as f64 / 1000.0,
+                        outcome: (match aresult.status.as_str() {
+                            "failed" => Outcome::Failure,
+                            "pending" => Outcome::Skip,
+                            "passed" => Outcome::Pass,
+                            x => {
+                                return Err(ParserError::new_err(format!(
+                                    "Error reading outcome. {} is an invalid value",
+                                    x
+                                )))
+                            }
+                        }),
+                        testsuite: result.name.clone(),
                     })
-                    .unwrap(),
-                    testsuite: result.name.clone(),
                 })
                 .collect::<Vec<_>>()
         })
         .collect();
 
-    Ok(testruns)
+    Ok(testruns?)
 }
