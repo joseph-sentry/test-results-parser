@@ -37,7 +37,7 @@ pub struct Testrun {
     #[pyo3(get, set)]
     pub testsuite: String,
     #[pyo3(get, set)]
-    pub failure_message: String,
+    pub failure_message: Option<String>,
 }
 
 impl Testrun {
@@ -47,7 +47,7 @@ impl Testrun {
             duration: 0.0,
             outcome: Outcome::Pass,
             testsuite: s(""),
-            failure_message: s(""),
+            failure_message: None,
         }
     }
 }
@@ -60,7 +60,7 @@ impl Testrun {
         duration: f64,
         outcome: Outcome,
         testsuite: String,
-        failure_message: String,
+        failure_message: Option<String>,
     ) -> Self {
         Self {
             name,
@@ -73,7 +73,7 @@ impl Testrun {
 
     fn __repr__(&self) -> String {
         format!(
-            "({}, {}, {}, {}, {})",
+            "({}, {}, {}, {}, {:?})",
             self.name, self.outcome, self.duration, self.testsuite, self.failure_message
         )
     }

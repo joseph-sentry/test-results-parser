@@ -16,14 +16,14 @@ def test_reportlog():
             0.0010750293731689453,
             Outcome.Pass,
             "tests/test_junit.py",
-            "",
+            None,
         ),
         Testrun(
             "TestParsers.test_junit[./tests/vitest-junit.xml-expected2]",
             0.0008599758148193359,
             Outcome.Pass,
             "tests/test_junit.py",
-            "",
+            None,
         ),
     ]
 

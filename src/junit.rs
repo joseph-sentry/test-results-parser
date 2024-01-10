@@ -1,10 +1,9 @@
 use pyo3::prelude::*;
 
-use std::collections::HashMap;
-
 use quick_xml::events::attributes::Attributes;
 use quick_xml::events::Event;
 use quick_xml::reader::Reader;
+use std::collections::HashMap;
 
 use crate::helpers::{s, ParserError};
 use crate::testrun::{Outcome, Testrun};
@@ -45,7 +44,7 @@ fn populate(attr_hm: &HashMap<String, String>, testsuite: String) -> Result<Test
         duration,
         outcome: Outcome::Pass,
         testsuite,
-        failure_message: s(""),
+        failure_message: None,
     })
 }
 
@@ -62,6 +61,7 @@ pub fn parse_junit_xml(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
     let mut saved_testrun: Option<Testrun> = None;
 
     let mut curr_testsuite = String::new();
+    let mut in_failure: bool = false;
 
     loop {
         match reader.read_event_into(&mut buf) {
@@ -97,6 +97,7 @@ pub fn parse_junit_xml(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
                         .ok_or(ParserError::new_err("Error accessing saved testrun"))?;
                     testrun.outcome = Outcome::Failure;
                     saved_testrun = Some(testrun);
+                    in_failure = true;
                 }
                 b"testsuite" => {
                     let attr_hm = attributes_map(e.attributes());
@@ -106,7 +107,7 @@ pub fn parse_junit_xml(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
                         .ok_or(ParserError::new_err(format!("Error getting name",)))?
                         .to_string();
                 }
-                _ => (),
+                _ => {}
             },
             Ok(Event::End(e)) => match e.name().as_ref() {
                 b"testcase" => {
@@ -116,6 +117,7 @@ pub fn parse_junit_xml(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
                     );
                     saved_testrun = None;
                 }
+                b"failure" => in_failure = false,
                 _ => (),
             },
             Ok(Event::Empty(e)) => match e.name().as_ref() {
@@ -126,16 +128,19 @@ pub fn parse_junit_xml(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
                 _ => (),
             },
             Ok(Event::Text(x)) => {
-                let mut testrun =
-                    saved_testrun.ok_or(ParserError::new_err("Error accessing saved testrun"))?;
+                if in_failure == true {
+                    let mut testrun = saved_testrun
+                        .ok_or(ParserError::new_err("Error accessing saved testrun"))?;
 
-                let mut xml_failure_message = x.into_owned();
-                xml_failure_message.inplace_trim_end();
-                xml_failure_message.inplace_trim_start();
+                    let mut xml_failure_message = x.into_owned();
+                    xml_failure_message.inplace_trim_end();
+                    xml_failure_message.inplace_trim_start();
 
-                testrun.failure_message = String::from_utf8(xml_failure_message.as_ref().to_vec())?;
+                    testrun.failure_message =
+                        Some(String::from_utf8(xml_failure_message.as_ref().to_vec())?);
 
-                saved_testrun = Some(testrun);
+                    saved_testrun = Some(testrun);
+                }
             }
 
             // There are several other `Event`s we do not consider here

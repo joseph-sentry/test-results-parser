@@ -63,7 +63,10 @@ pub fn parse_vitest_json(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
                             }
                         }),
                         testsuite: result.name.clone(),
-                        failure_message: aresult.failure_messages.join(" "),
+                        failure_message: match aresult.failure_messages.len() {
+                            0 => None,
+                            _ => Some(aresult.failure_messages.join(" ")),
+                        },
                     })
                 })
                 .collect::<Vec<_>>()
