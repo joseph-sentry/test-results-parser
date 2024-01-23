@@ -35,6 +35,6 @@ jobs:
         if: success() || failure()
         run: |
           codecovcli -u ${{ secrets.CODECOV_URL }} create-commit -t ${{ secrets.CODECOV_ORG_TOKEN }}
-	        codecovcli -u ${{ secrets.CODECOV_URL }} create-report -t ${{ secrets.CODECOV_ORG_TOKEN }}
+          codecovcli -u ${{ secrets.CODECOV_URL }} create-report -t ${{ secrets.CODECOV_ORG_TOKEN }}
           codecovcli -u ${{ secrets.CODECOV_URL }} --verbose do-upload -t ${{ secrets.CODECOV_ORG_TOKEN }} --report-type test_results --flag unit --file unit.junit.xml --disable-search --plugin None
-	        codecovcli -u ${{ secrets.CODECOV_URL }} --verbose do-upload -t ${{ secrets.CODECOV_ORG_TOKEN }} --file coverage.xml
+          codecovcli -u ${{ secrets.CODECOV_URL }} --verbose do-upload -t ${{ secrets.CODECOV_ORG_TOKEN }} --file coverage.xml
