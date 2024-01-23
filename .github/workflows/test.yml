@@ -23,7 +23,18 @@ jobs:
           pip install maturin
           pip install -r tests/requirements.txt
           maturin develop
+      - name: Install codecov cli
+        run: |
+          pip install --no-cache-dir git+https://github.com/codecov/codecov-cli.git@joseph/test-results
       - name: Run tests
         run: |
           . venv/bin/activate
-          python -m pytest
+          python -m pytest --cov-report=xml:coverage.xml --junitxml=unit.junit.xml
+
+      - name: Upload results to codecov
+        if: success() || failure()
+        run:
+          codecovcli -u ${{ secrets.CODECOV_URL }} create-commit -t ${{ secrets.CODECOV_ORG_TOKEN }}
+	        codecovcli -u ${{ secrets.CODECOV_URL }} create-report -t ${{ secrets.CODECOV_ORG_TOKEN }}
+          codecovcli -u ${{ secrets.CODECOV_URL }} --verbose do-upload -t ${{ secrets.CODECOV_ORG_TOKEN }} --report-type test_results --flag unit --file unit.junit.xml --disable-search --plugin None
+	        codecovcli -u ${{ secrets.CODECOV_URL }} --verbose do-upload -t ${{ secrets.CODECOV_ORG_TOKEN }} --file coverage.xml
