@@ -25,7 +25,7 @@ jobs:
           maturin develop
       - name: Install codecov cli
         run: |
-          pip install --no-cache-dir git+https://github.com/codecov/codecov-cli.git@joseph/test-results
+          pip install --no-cache-dir git+https://github.com/codecov/codecov-cli.git@joseph/test-results-staging
       - name: Run tests
         run: |
           . venv/bin/activate
