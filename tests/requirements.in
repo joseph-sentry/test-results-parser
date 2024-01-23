@@ -1,3 +1,4 @@
 pytest
 pytest-reportlog
 pytest-cov
+coverage
