@@ -14,6 +14,30 @@ pub enum Outcome {
     Skip,
 }
 
+#[pymethods]
+impl Outcome {
+    #[new]
+    fn new(value: String) -> Self {
+        let val = value.as_str();
+        match val {
+            "pass" => Outcome::Pass,
+            "failure" => Outcome::Failure,
+            "error" => Outcome::Error,
+            "skip" => Outcome::Skip,
+            _ => Outcome::Failure,
+        }
+    }
+
+    fn __str__(&self) -> String {
+        match &self {
+            Outcome::Pass => s("pass"),
+            Outcome::Failure => s("failure"),
+            Outcome::Error => s("error"),
+            Outcome::Skip => s("skip"),
+        }
+    }
+}
+
 impl Display for Outcome {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
