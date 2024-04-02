@@ -93,6 +93,25 @@ tests/test_parsers.py:16: AssertionError""",
                     ),
                 ],
             ),
+            (
+                "./tests/empty_failure.junit.xml",
+                [
+                    Testrun(
+                        "test.test::test.test works",
+                        0.234,
+                        Outcome.Pass,
+                        "test",
+                        None
+                    ),
+                    Testrun(    
+                        "test.test::test.test fails",
+                        1,
+                        Outcome.Failure,
+                        "test",
+                        "TestError"
+                    ),
+                ]
+            ),
         ],
     )
     def test_junit(self, filename, expected):
@@ -101,3 +120,4 @@ tests/test_parsers.py:16: AssertionError""",
             assert len(res) == len(expected)
             for restest, extest in zip(res, expected):
                 assert restest == extest
+

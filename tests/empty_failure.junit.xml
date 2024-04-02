@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuites tests="2" failures="1" errors="0" skipped="0" time="1.234">
+    <testsuite name="test" tests="2" errors="0" failures="0" skipped="0" time="1.234">
+        <testcase classname="test.test"
+            name="test.test works"
+            file="./test.rb" time="0.234" />
+    </testsuite>
+    <testcase classname="test.test"
+        name="test.test fails"
+        file="./test.rb" time="1.000">
+        <failure message="TestError"
+            type="TestError">
+</failure>
+    </testcase>
+</testsuites>

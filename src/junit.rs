@@ -96,6 +96,9 @@ pub fn parse_junit_xml(file_bytes: Vec<u8>) -> PyResult<Vec<Testrun>> {
                     let mut testrun = saved_testrun
                         .ok_or(ParserError::new_err("Error accessing saved testrun"))?;
                     testrun.outcome = Outcome::Failure;
+                    let attr_hm = attributes_map(e.attributes())?;
+                    let tentative_message = attr_hm.get("message").cloned();
+                    testrun.failure_message = tentative_message;
                     saved_testrun = Some(testrun);
                     in_failure = true;
                 }
