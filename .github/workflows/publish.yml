@@ -27,7 +27,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          args: --release --out dist --find-interpreter
+          args: --release --out dist --interpreter '3.8 3.9 3.10 3.10 3.12'
           sccache: 'true'
           manylinux: auto
       - name: Upload wheels
@@ -63,7 +63,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        target: [x64, x86, aarch64]
+        target: [x64, x86]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -74,7 +74,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          args: --release --out dist --find-interpreter
+          args: --release --out dist --interpreter '3.8 3.9 3.10 3.10 3.12'
           sccache: 'true'
       - name: Upload wheels
         uses: actions/upload-artifact@v3
@@ -96,7 +96,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          args: --release --out dist --find-interpreter
+          args: --release --out dist --interpreter '3.8 3.9 3.10 3.10 3.12'
           sccache: 'true'
       - name: Upload wheels
         uses: actions/upload-artifact@v3
